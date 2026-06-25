@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pillow
+openai-whisper
+torch
+transformers
+python-dotenv
+pytesseract
+google-generativeai
+scikit-learn
+pandas
+tqdm
+python-multipart
+huggingface_hub

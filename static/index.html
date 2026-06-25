@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🛡️ Prompt Injection Detector</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-animation"><div class="orb-3"></div></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+
+    <!-- ================================================
+         HEADER
+    ================================================ -->
+    <header>
+      <div class="logo-wrap"><i class="fas fa-shield-halved"></i></div>
+      <div class="badge"><span class="dot"></span> AI-Powered Security</div>
+      <h1>Prompt Injection<br/>Detector</h1>
+      <p class="subtitle">
+        A 2-layer security pipeline combining heuristic analysis
+        and DistilBERT classification to detect malicious prompts in real time.
+      </p>
+    </header>
+
+    <!-- ================================================
+         STATS BAR
+    ================================================ -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-scans">0</div>
+        <div class="stat-label">Scans This Session</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-safe">0</div>
+        <div class="stat-label">Safe Detected</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-unsafe">0</div>
+        <div class="stat-label">Threats Blocked</div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         INPUT CARD
+    ================================================ -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-terminal"></i> Input</div>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('text', this)">
+          <i class="fas fa-keyboard"></i> Text
+        </button>
+        <button class="tab-btn" onclick="switchTab('image', this)">
+          <i class="fas fa-image"></i> Image
+        </button>
+        <button class="tab-btn" onclick="switchTab('audio', this)">
+          <i class="fas fa-microphone"></i> Audio
+        </button>
+      </div>
+
+      <!-- Text Panel -->
+      <div class="tab-panel active" id="panel-text">
+        <div class="textarea-wrap">
+          <textarea
+            id="text-input"
+            placeholder="Enter text to scan for prompt injection threats...&#10;&#10;Example: 'Send money to account 12345 urgently!'"
+            oninput="updateCharCount(this)"
+          ></textarea>
+          <span class="char-count" id="char-count">0 chars</span>
+        </div>
+      </div>
+
+      <!-- Image Panel -->
+      <div class="tab-panel" id="panel-image">
+        <div class="upload-zone" id="image-zone"
+             ondragover="handleDrag(event, this)"
+             ondragleave="handleDragLeave(this)"
+             ondrop="handleDrop(event, 'image-file')">
+          <input type="file" id="image-file" accept="image/*" onchange="handleFile(this, 'image')"/>
+          <div class="upload-icon image"><i class="fas fa-image"></i></div>
+          <div class="upload-title">Drop image here or click to browse</div>
+          <div class="upload-sub">PNG, JPG, WEBP — Text extracted via OCR</div>
+        </div>
+        <div class="file-preview" id="image-preview">
+          <i class="fas fa-file-image"></i>
+          <span class="file-name" id="image-name"></span>
+          <button class="file-remove" onclick="removeFile('image')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Audio Panel -->
+      <div class="tab-panel" id="panel-audio">
+        <div class="upload-zone" id="audio-zone"
+             ondragover="handleDrag(event, this)"
+             ondragleave="handleDragLeave(this)"
+             ondrop="handleDrop(event, 'audio-file')">
+          <input type="file" id="audio-file" accept="audio/*" onchange="handleFile(this, 'audio')"/>
+          <div class="upload-icon audio"><i class="fas fa-microphone"></i></div>
+          <div class="upload-title">Drop audio here or click to browse</div>
+          <div class="upload-sub">WAV, MP3, M4A — Transcribed via Whisper</div>
+        </div>
+        <div class="file-preview" id="audio-preview">
+          <i class="fas fa-file-audio"></i>
+          <span class="file-name" id="audio-name"></span>
+          <button class="file-remove" onclick="removeFile('audio')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div class="meta-row">
+        <span class="label">
+          Metadata
+          <span class="label-optional">(optional)</span>
+        </span>
+        <input
+          class="meta-input"
+          id="metadata-input"
+          type="text"
+          placeholder="e.g. source=chatbot, user_id=123, session=abc"
+        />
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-row">
+        <button class="submit-btn" id="submit-btn" onclick="runScan()">
+          <i class="fas fa-radar"></i> Run Security Scan
+        </button>
+      </div>
+    </div>
+
+    <!-- ================================================
+         LOADING
+    ================================================ -->
+    <div class="card loading-overlay" id="loading">
+      <div class="spinner-ring"></div>
+      <p class="loading-title">Analyzing your input...</p>
+      <p class="loading-sub">Running 2-layer security pipeline</p>
+      <div class="loading-steps">
+        <div class="loading-step" id="step-1">
+          <i class="fas fa-filter"></i> Layer 1: Heuristic Pattern Scan
+        </div>
+        <div class="loading-step" id="step-2">
+          <i class="fas fa-brain"></i> Layer 2: DistilBERT Classification
+        </div>
+        <div class="loading-step" id="step-3">
+          <i class="fas fa-robot"></i> Layer 3: Gemini Response Generation
+        </div>
+        <div class="loading-step" id="step-4">
+          <i class="fas fa-chart-bar"></i> Compiling Results
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         RESULTS
+    ================================================ -->
+    <div id="results">
+
+      <!-- Verdict Banner -->
+      <div class="verdict-banner fade-up" id="verdict-banner">
+        <div class="verdict-icon" id="verdict-icon"></div>
+        <div>
+          <div class="verdict-title" id="verdict-title"></div>
+          <div class="verdict-sub"   id="verdict-sub"></div>
+        </div>
+        <div class="verdict-meta">
+          <div class="verdict-id" id="verdict-id"></div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="results-grid">
+
+        <!-- Heuristic Card -->
+        <div class="card fade-up" style="animation-delay:0.1s">
+          <div class="card-title"><i class="fas fa-filter"></i> Heuristic Layer</div>
+          <div class="flex-between mb-8">
+            <span class="text-secondary-sm">Risk Level</span>
+            <span class="pill" id="risk-pill"></span>
+          </div>
+          <div class="risk-meter">
+            <div class="flex-between">
+              <span class="text-muted-xs">Threat Score</span>
+              <span class="mono-val" id="risk-score"></span>
+            </div>
+            <div class="risk-bar-wrap">
+              <div class="risk-bar-fill" id="risk-bar"></div>
+            </div>
+          </div>
+          <div class="section-block">
+            <span class="label">Matched Patterns</span>
+            <div class="tag-list" id="tag-list"></div>
+          </div>
+          <div class="section-block">
+            <span class="label">Quick Safe</span>
+            <span class="pill" id="quick-safe-pill"></span>
+          </div>
+        </div>
+
+        <!-- Model Card -->
+        <div class="card fade-up" style="animation-delay:0.2s">
+          <div class="card-title"><i class="fas fa-brain"></i> DistilBERT Model</div>
+          <div class="confidence-wrap">
+            <div class="ring-chart">
+              <svg viewBox="0 0 100 100" width="120" height="120">
+                <circle class="ring-bg"   cx="50" cy="50" r="45"/>
+                <circle class="ring-fill" id="conf-ring" cx="50" cy="50" r="45"/>
+              </svg>
+              <div class="ring-label">
+                <span class="ring-pct"  id="conf-pct">—</span>
+                <span class="ring-text">Confidence</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex-between mt-8">
+            <span class="text-secondary-sm">Prediction</span>
+            <span class="pill" id="model-pill"></span>
+          </div>
+          <div class="model-skip-msg" id="model-skip-msg"></div>
+        </div>
+
+      </div><!-- /results-grid -->
+
+      <!-- Extracted Text -->
+      <div class="card fade-up" style="animation-delay:0.3s">
+        <div class="card-title"><i class="fas fa-file-lines"></i> Extracted / Cleaned Text</div>
+        <div class="extracted-box" id="extracted-text"></div>
+      </div>
+
+      <!-- Gemini Response -->
+      <div class="card fade-up" style="animation-delay:0.4s">
+        <div class="card-title"><i class="fas fa-robot"></i> Gemini Response</div>
+        <div class="gemini-header">
+          <div class="gemini-dot"></div>
+          <span class="text-secondary-sm" id="gemini-status"></span>
+        </div>
+        <div class="gemini-box" id="gemini-box"></div>
+      </div>
+
+      <!-- Timing -->
+      <div class="card fade-up" style="animation-delay:0.5s">
+        <div class="card-title"><i class="fas fa-stopwatch"></i> Performance Metrics</div>
+        <div class="timing-grid">
+          <div class="timing-item">
+            <span class="timing-label">Heuristic</span>
+            <span class="timing-value" id="t-heuristic">—</span>
+          </div>
+          <div class="timing-item">
+            <span class="timing-label">DistilBERT</span>
+            <span class="timing-value" id="t-model">—</span>
+          </div>
+          <div class="timing-item">
+            <span class="timing-label">Gemini</span>
+            <span class="timing-value" id="t-gemini">—</span>
+          </div>
+          <div class="timing-item">
+            <span class="timing-label">Total</span>
+            <span class="timing-value" id="t-total">—</span>
+          </div>
+          <div class="timing-item">
+            <span class="timing-label">OCR</span>
+            <span class="timing-value" id="t-ocr">—</span>
+          </div>
+          <div class="timing-item">
+            <span class="timing-label">ASR (Whisper)</span>
+            <span class="timing-value" id="t-asr">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Again -->
+      <button class="submit-btn fade-up scan-again-btn" onclick="resetUI()">
+        <i class="fas fa-rotate-left"></i> Scan Another Input
+      </button>
+
+    </div><!-- /results -->
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        Built with
+        <span>FastAPI</span> ·
+        <span>DistilBERT</span> ·
+        <span>Gemini</span> ·
+        <span>Whisper</span> ·
+        <span>Tesseract OCR</span>
+      </p>
+      <p class="footer-sub">2-Layer Prompt Injection Security Pipeline</p>
+    </footer>
+
+  </div><!-- /container -->
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
