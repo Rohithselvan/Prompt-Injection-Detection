@@ -13,6 +13,7 @@
 - [Configuration](#-configuration)
 - [Dataset](#-dataset)
 - [Training the Model](#-training-the-model)
+- [Model Loading](#-model-loading)
 - [Running the API](#-running-the-api)
 - [Using the Frontend](#-using-the-frontend)
 - [API Reference](#-api-reference)
@@ -363,6 +364,66 @@ special_tokens_map.json  ← special token mappings
 > downloads automatically and the model is built fresh.
 
 ---
+
+## 🤖 Model Loading
+
+The project supports **two ways** to use the DistilBERT classifier, making it easy for both end users and developers.
+
+### 🚀 Option 1 — Use the Pre-trained Model (Recommended)
+
+If the `model/` directory does **not** contain the required model files, the application will automatically:
+
+- 🔍 Check for a local model
+- ⬇️ Download the latest trained model from **Hugging Face**
+- 💾 Save it inside the `model/` directory
+- ⚡ Use the cached model for all future runs
+
+> **Hugging Face Model:**  
+> https://huggingface.co/Rohith1872/DistilBERT_Classifier
+
+---
+
+### 🏋️ Option 2 — Train Your Own Model
+
+If you want to fine-tune the classifier yourself, simply run:
+
+```bash
+python train.py
+```
+
+The training pipeline will:
+
+- 📥 Automatically download the dataset (if not available)
+- 🤖 Fine-tune the DistilBERT classifier
+- 💾 Save the trained model to the `model/` directory
+
+Once the model is available locally, the application will always use it instead of downloading from Hugging Face.
+
+---
+
+### 🔄 Model Loading Workflow
+
+```text
+Application Starts
+        │
+        ▼
+🔍 Local model found?
+    │
+ ┌──┴──┐
+ │     │
+Yes    No
+ │      │
+ │   ⬇️ Download from
+ │      Hugging Face
+ │      │
+ │   💾 Save to model/
+ └──────┴──────┐
+               ▼
+      🤖 Load DistilBERT
+               │
+               ▼
+        🚀 Ready for Inference
+```
 
 ## ▶️ Running the API
 
