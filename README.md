@@ -141,21 +141,37 @@ Input (Text / Image / Audio)
 ```
 Prompt_Injection_Detection/
 │
-├── main.py                  # FastAPI backend — full pipeline
-├── train.py                 # DistilBERT training script (auto-downloads dataset)
+├── core/
+│   ├── __init__.py
+│   ├── asr.py                 # Whisper speech-to-text
+│   ├── config.py              # Configuration and environment variables
+│   ├── ocr.py                 # Tesseract OCR utilities
+│   └── preprocess.py          # Text preprocessing and cleaning
+│
+├── pipeline/
+│   ├── __init__.py
+│   ├── classifier.py          # DistilBERT inference
+│   ├── gemini.py              # Gemini API integration
+│   └── heuristic.py           # Rule-based prompt injection detection
+│
+├── training/
+│   ├── __init__.py
+│   ├── dataset.py             # Dataset loading and preprocessing
+│   ├── downloader.py          # Downloads dataset/model if required
+│   └── trainer.py             # DistilBERT training logic
+│
+├── model/                     # Trained model (generated or downloaded)
 │
 ├── static/
-│   ├── index.html           # Frontend — main HTML structure
-│   ├── css/
-│   │   └── style.css        # Frontend — all styles
-│   └── js/
-│       └── app.js           # Frontend — all JavaScript logic
+│   ├── app.js                 # Frontend JavaScript
+│   ├── index.html             # Frontend UI
+│   └── style.css              # Frontend styling
 │
-├── requirements.txt         # Python dependencies
-├── .env                     # Your API keys (never commit this!)
-├── .env.example             # Safe API key template
-├── .gitignore               # Git ignore rules
-└── README.md                # This file
+├── train.py                   # Entry point for model training
+├── main.py                    # FastAPI application
+├── requirements.txt           # Project dependencies
+└── README.md
+```
 ```
 
 > ⚠️ **Model files** (`pytorch_model.bin`, `config.json`, `vocab.txt`, etc.) are generated
