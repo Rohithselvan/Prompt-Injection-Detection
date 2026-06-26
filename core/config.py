@@ -1,6 +1,5 @@
 # ===================================================================
 # ✅ CORE CONFIG
-# All constants, paths, device setup, and environment loading
 # ===================================================================
 
 import os
@@ -16,7 +15,8 @@ BASE_DIR = os.path.dirname(
         os.path.abspath(__file__)
     )
 )
-MODEL_PATH = os.path.join(BASE_DIR, "model")   # train.py saves model files here
+
+MODEL_PATH = os.path.join(BASE_DIR, "model")  # model folder
 
 # ---------------------------------------------------------
 # ENVIRONMENT
@@ -57,5 +57,18 @@ TRAIN_SAVE_PATH   = BASE_DIR
 # ---------------------------------------------------------
 # HUGGING FACE DATASET
 # ---------------------------------------------------------
-HF_REPO_ID        = "Rohith1872/prompt-injection-dataset"
-HF_FILENAME       = "data.csv"
+HF_REPO_ID  = "Rohith1872/prompt-injection-dataset"
+HF_FILENAME = "data.csv"
+
+# ---------------------------------------------------------
+# ✅ HUGGING FACE MODEL (IMPORTANT)
+# ---------------------------------------------------------
+HF_MODEL_ID = "Rohith1872/DistilBERT_Classifier"
+
+# Minimum required files to consider model "present"
+LOCAL_MODEL_FILES = [
+    "config.json",
+    "model.safetensors",
+    "tokenizer_config.json",
+    "vocab.txt"
+]
