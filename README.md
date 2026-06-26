@@ -346,31 +346,31 @@ Open your browser:
 
 ### 📝 Text Input
 
-> *Add Screenshot*
+<img width="551" height="447" alt="Imaage" src="https://github.com/user-attachments/assets/e55aa8a4-864e-4723-acb5-7e5b4455b7ba" />
 
 ---
 
 ### 🖼️ Image OCR Detection
 
-> *Add Screenshot*
+<img width="1445" height="447" alt="Image" src="https://github.com/user-attachments/assets/a89b3d2c-331a-47c3-a40e-bce3d9a2d52b" />
 
 ---
 
 ### 🎙️ Audio Detection
 
-> *Add Screenshot*
+<img width="1132" height="353" alt="Image" src="https://github.com/user-attachments/assets/d86395bc-71ae-4131-a79f-ebe8e7bf83b2" />
 
 ---
 
 ### 🚨 Unsafe Prompt Detection
 
-> *Add Screenshot*
+<img width="1140" height="352" alt="Image" src="https://github.com/user-attachments/assets/2e278aa1-6893-4e48-ba45-f58d9f72efea" />
 
 ---
 
 ### ✅ Safe Prompt Response
 
-> *Add Screenshot*
+<img width="1278" height="395" alt="Image" src="https://github.com/user-attachments/assets/e6acd2e4-e909-4d93-a1e7-a1851cdf8085" />
 
 ---
 
