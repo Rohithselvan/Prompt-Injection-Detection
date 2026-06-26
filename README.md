@@ -172,7 +172,6 @@ Prompt_Injection_Detection/
 ├── requirements.txt           # Project dependencies
 └── README.md
 ```
-```
 
 > ⚠️ **Model files** (`pytorch_model.bin`, `config.json`, `vocab.txt`, etc.) are generated
 > after training and excluded from Git via `.gitignore` due to their size.
